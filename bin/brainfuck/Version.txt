@@ -1,0 +1,6 @@
+[2019/2/19]
+	-v0.2
+	This version, we set make it better on open a file.
+[2019/1/6]
+	-v0.1
+	This version, run a brainfuck(bf) file.

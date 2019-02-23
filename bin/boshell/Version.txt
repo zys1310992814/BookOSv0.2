@@ -1,0 +1,8 @@
+[2:46 2019/2/20]
+	-v0.2
+	if we write & after bin name, it's a daemon process. we can run shell after that.
+[2019/1/7]
+	-v0.1
+	set it as a beta. we get command and run it. if it's a execute file.we load it from disk and run it.
+
+	
