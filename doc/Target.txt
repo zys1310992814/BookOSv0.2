@@ -1,0 +1,17 @@
+[YES]	paging modle and protect modle
+[YES]	kernel and user memory management
+[YES]	cpu information
+[YES]	console solve
+[YES]	gdt and idt set
+[YES]	FATXE file system
+[YES]	multitask and kernel threads
+[YES]	systemcall set
+[YES]	device clock, harddisk, keyboard,mouse,ramdisk,vdieo,vga
+[YES ]	GUI for kernel and user
+[YES ]	user mous and keyboard device deal.
+[YES ]	semaphore and lock set
+[YES ]	GUI shell
+[YES ]	video buffer switch
+
+
+
