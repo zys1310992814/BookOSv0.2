@@ -62,7 +62,6 @@
 #define _NR_WRITE_PIPE	50
 #define _NR_READ_PIPE	51
 #define _NR_CLOSE_PIPE	52
-#define _NR_INIT_PIPE   53
 
 #define MAX_SYS_CALLS 60
 

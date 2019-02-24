@@ -17,7 +17,7 @@ INCLUDE_PATH = ../include/
 
 #flags
 ASM_FLAGS	= -I $(INCLUDE_PATH) -f elf
-C_FLAGS	= -I $(INCLUDE_PATH) -c -fno-builtin -Wall -Wunused
+C_FLAGS	= -I $(INCLUDE_PATH) -c -fno-builtin -Wall -Wunused -m32 -fno-stack-protector
 
 OBJS =  _start.o\
 		x86.o\

@@ -26,7 +26,8 @@ struct pipe {
     struct lock lock;
 };
 struct pipe_list *pipes;
-void sys_init_pipe(){
+
+void init_pipe(){
     pipes = (struct pipe_list*)kmalloc(sizeof(struct pipe_list));
     pipes->pipe_number = 0;
 }

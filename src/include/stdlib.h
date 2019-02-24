@@ -3,6 +3,7 @@
 
 #include <sys/system.h>
 #include <sys/pipe.h>
+
 void *malloc(int size);
 void free(void *ptr);
 
@@ -21,7 +22,9 @@ void reboot(int reboot_type);
 int rand();
 void srand(unsigned int seed);
 
-
-
+uint64_t new_pipe(uint32_t size);
+bool write_pipe(uint64_t pipe_id,void* data,uint32_t size);
+bool read_pipe(uint64_t pipe_id,void* buffer);
+bool close_pipe(uint64_t pipe_id);
 
 #endif
