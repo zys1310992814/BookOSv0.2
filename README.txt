@@ -4,3 +4,5 @@ E-mail：2323168280@qq.com
 Update:
 	-v0.2 2019/2/21
 	-v0.1 2019/1/7
+ScreenShot:
+![Image text](BookOSv0.2/screenshot/logo.png)
