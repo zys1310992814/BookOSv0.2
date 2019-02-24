@@ -5,7 +5,5 @@ Update:
 	-v0.2 2019/2/21
 	-v0.1 2019/1/7
 ScreenShot:
-When start, show logo!
 ![image](https://github.com/huzichengdevelop/BookOSv0.2/blob/master/screenshot/logo.png)
-Write some commands!
 ![image](https://github.com/huzichengdevelop/BookOSv0.2/blob/master/screenshot/run.png)
