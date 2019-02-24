@@ -21,7 +21,7 @@ struct pipe_list {
 struct pipe {
     uint64_t pipe_id;
     uint32_t data_size;
-    uint32_t data_area;
+    void* data_area;
     struct pipe *next;
     struct lock lock;
 };
@@ -80,6 +80,7 @@ bool sys_read_pipe(uint64_t pipe_id,void* buffer){
     lock_acquire(&target_pipe->lock);
     memcpy(buffer,target_pipe->data_area,target_pipe->data_size);
     lock_release(&target_pipe->lock);
+    return true;
 }
 bool sys_close_pipe(uint64_t pipe_id){
     if(pipes->pipe_number < pipe_id){
