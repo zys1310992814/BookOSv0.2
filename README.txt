@@ -5,4 +5,5 @@ Update:
 	-v0.2 2019/2/21
 	-v0.1 2019/1/7
 ScreenShot:
-![Image text](BookOSv0.2/screenshot/logo.png)
+![Image text](https://github.com/huzichengdevelop/BookOSv0.2/blob/master/screenshot/logo.png)
+
