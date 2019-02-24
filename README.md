@@ -15,6 +15,6 @@ ScreenShot:
 	sudo apt-get install qemu qemu-user-static
 	sudo apt-get insatll nasm vgabios bochs bochs-x bximage
 	2.Changing your current dictionary to src and make:
-	cd src
+	cd $workdir/src
 	make
 	3.Have fun.
