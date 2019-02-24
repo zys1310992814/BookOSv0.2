@@ -16,7 +16,7 @@ CC			= gcc
 INCLUDE_PATH = ../include/
 
 #flags
-C_FLAGS	= -I $(INCLUDE_PATH) -c -fno-builtin -Wall -Wunused
+C_FLAGS	= -I $(INCLUDE_PATH) -c -fno-builtin -Wall -Wunused -m32 -fno-stack-protector
 
 OBJS =  main.o\
 		graphic.o\
