@@ -34,6 +34,7 @@ E-mail:		2323168280@qq.com
 #include <sys/image.h>
 #include <sys/graphic.h>
 #include <sys/pipe.h>
+#include <sys/rgui.h>
 #define WRITE_DISK 1
 
 #define WRITE_ID 5
@@ -103,7 +104,7 @@ int main()
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
 	init_gui();
-	
+	sys_init_gui_system();
 	process_execute(init, "init");
 	
 	thread_bus.main = 1;

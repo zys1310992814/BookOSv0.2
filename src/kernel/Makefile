@@ -40,7 +40,8 @@ OBJS =  _start.o\
 		tss.o\
 		process.o\
 		system.o\
-		pipe.o
+		pipe.o\
+		rgui.o\
 		
 		
 		
