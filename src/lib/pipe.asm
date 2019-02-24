@@ -7,12 +7,7 @@ _NR_NEW_PIPE EQU 49
 _NR_WRITE_PIPE EQU 50
 _NR_READ_PIPE EQU 51
 _NR_CLOSE_PIPE EQU 52
-_NR_INIT_PIPE  EQU 53
-global init_pipe
-init_pipe:
-	mov eax, _NR_INIT_PIPE
-	int INT_VECTOR_SYS_CALL
-	ret
+
 global new_pipe
 new_pipe:
 	mov eax, _NR_NEW_PIPE
@@ -31,6 +26,7 @@ global read_pipe
 read_pipe:
 	mov eax, _NR_READ_PIPE
 	mov ebx, [esp + 4]
+	mov ecx, [esp + 8]
 	int INT_VECTOR_SYS_CALL
 	ret
 global close_pipe
