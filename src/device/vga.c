@@ -1,5 +1,5 @@
 /*
-File:		device/vga.c
+File:		device/ramdisk.c
 Contains:	driver for vga
 Auther:		Hu Zicheng
 Time:		2019/1/29

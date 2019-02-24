@@ -39,7 +39,8 @@ OBJS =  _start.o\
 		sync.o\
 		tss.o\
 		process.o\
-		system.o
+		system.o\
+		pipe.o
 		
 		
 		

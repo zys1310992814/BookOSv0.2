@@ -74,6 +74,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(KERNEL_DIR)tss.o\
 		$(KERNEL_DIR)process.o\
 		$(KERNEL_DIR)system.o\
+		$(KERNEL_DIR)pipe.o\
 		$(FS_DIR)dir.o\
 		$(FS_DIR)fatxe.o\
 		$(FS_DIR)fat.o\
@@ -133,6 +134,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(LIB_DIR)igl.o\
 		$(LIB_DIR)video.o\
 		$(LIB_DIR)mm.o\
+		$(LIB_DIR)pipe.o\
 		
 all: compile link disk qemu
 

@@ -33,10 +33,10 @@ E-mail:		2323168280@qq.com
 #include <sys/mouse.h>
 #include <sys/image.h>
 #include <sys/graphic.h>
-
+#include <sys/pipe.h>
 #define WRITE_DISK 1
 
-#define WRITE_ID 4
+#define WRITE_ID 5
 
 #if WRITE_ID == 1
 	#define WRITE_NAME "/test"
@@ -49,6 +49,9 @@ E-mail:		2323168280@qq.com
 	#define FILE_SECTORS 40
 #elif WRITE_ID == 4
 	#define WRITE_NAME "/brainfuck"
+	#define FILE_SECTORS 20
+#elif WRITE_ID == 5
+	#define WRITE_NAME "/piper"
 	#define FILE_SECTORS 20
 #endif
 
@@ -96,7 +99,7 @@ int main()
 	thread_start("keyboard", 2, thread_keyboard, NULL);
 	thread_start("mouse", 2, thread_mouse, NULL);
 	thread_start("clock", 2, thread_clock, NULL);
-	
+	sys_init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
 	init_gui();
 	

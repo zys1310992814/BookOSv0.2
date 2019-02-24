@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "memory.h": "c",
+        "sync.h": "c",
+        "stdlib.h": "c",
+        "system.h": "c",
+        "pipe.h": "c",
+        "syscall.h": "c",
+        "graphic.h": "c",
+        "stdio.h": "c"
+    }
+}

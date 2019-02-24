@@ -2,7 +2,7 @@
 #define _STDLIB_H_
 
 #include <sys/system.h>
-
+#include <sys/pipe.h>
 void *malloc(int size);
 void free(void *ptr);
 
@@ -20,5 +20,8 @@ void reboot(int reboot_type);
 
 int rand();
 void srand(unsigned int seed);
+
+
+
 
 #endif
