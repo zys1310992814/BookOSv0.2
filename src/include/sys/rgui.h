@@ -26,4 +26,5 @@ void sys_init_gui_system();
 uint32_t sys_new_window();
 void sys_redraw();
 void sys_fulldraw_sheet(struct sheet* sheet);
+void sys_clean_view();
 #endif

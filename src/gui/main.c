@@ -50,7 +50,6 @@ void init_gui()
 	
 	current_vidbuf = vidbuf_console;
 	init_terminal();
-	
 }
 
 struct video_buffer *alloc_vidbuf()

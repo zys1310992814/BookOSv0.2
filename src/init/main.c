@@ -100,13 +100,14 @@ int main()
 	thread_start("keyboard", 2, thread_keyboard, NULL);
 	thread_start("mouse", 2, thread_mouse, NULL);
 	thread_start("clock", 2, thread_clock, NULL);
-	
+	/*初始化管道系统，用于进程间通讯*/
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
-	init_gui();
+	//init_gui();
 	sys_init_gui_system();
-	process_execute(init, "init");
 	
+	//sys_clean_screen();
+	process_execute(init, "init");
 	thread_bus.main = 1;
 	while(1){
 		/*如果有进程被击杀，在这里回收
