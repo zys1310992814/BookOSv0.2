@@ -64,7 +64,7 @@ LoadeKernel:
 	mov cx, BLOCK_SIZE
 	call LoadeBlock
 	
-	;second block 128 sectors
+	;third block 128 sectors
 	add ax, 0x1000
 	mov cx, BLOCK_SIZE
 	call LoadeBlock
