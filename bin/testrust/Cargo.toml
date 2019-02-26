@@ -1,0 +1,10 @@
+[package]
+name = "testrust"
+version = "0.1.0"
+authors = ["Dorbmon <1263592223@qq.com>"]
+edition = "2018"
+
+[dependencies]
+libc = "0.2.9"
+[build-dependencies]
+cc = "1.0"
