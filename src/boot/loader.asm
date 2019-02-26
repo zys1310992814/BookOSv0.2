@@ -68,7 +68,7 @@ LoadeKernel:
 	add ax, 0x1000
 	mov cx, BLOCK_SIZE
 	call LoadeBlock
-
+LoadeApp:
 	;loade app
 	mov ax, APP_SEG
 	mov si, APP_OFF
