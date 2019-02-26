@@ -12,6 +12,6 @@
 [YES ]	semaphore and lock set
 [YES ]	GUI shell
 [YES ]	video buffer switch
-
+[NO]	Window System
 
 
