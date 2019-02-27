@@ -12,11 +12,16 @@ E-mail:		1263592223@qq.com
 #include <sys/video.h>
 #include <sys/color.h>
 #include <sys/font.h>
+#include <sys/thread.h>
+#include <sys/keyboard.h>
+
 struct gui_window *window_list[MAX_WINDOW_NUMBER];
 struct sheet *system_sheets[MAX_SHEET_NUMBER];
 uint32_t window_number = 0;
 uint32_t sheet_number = 0;
 struct Vector2 default_window_size;
+//这里是一些关于监听的绑定
+keyborad_linstener top_keyboard_reader;
 void sys_init_gui_system(){
     init_font();
     default_window_size.x = 100;
@@ -37,7 +42,24 @@ void sys_init_gui_system(){
     
     sys_redraw();
     vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_BLACK);
+
+    //创建键盘监听线程
+    thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     return;
+}
+void keyborad_listen(){
+    int key = 0;
+    for(;;){
+        key = sys_get_key();
+        if(key == -1){
+            continue;
+        }
+        //如果不为空，则调用用户的监听函数
+        if(top_keyboard_reader != NULL){
+            top_keyboard_reader(key);
+        }
+        continue;
+    }
 }
 uint32_t sys_new_window(){  //返回窗口句柄
     if(window_number == MAX_WINDOW_NUMBER){

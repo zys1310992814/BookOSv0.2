@@ -9,6 +9,7 @@
         "graphic.h": "c",
         "stdio.h": "c",
         "rgui.h": "c",
-        "font.h": "c"
+        "font.h": "c",
+        "keyboard.h": "c"
     }
 }

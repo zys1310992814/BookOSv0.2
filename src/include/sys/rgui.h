@@ -27,4 +27,5 @@ uint32_t sys_new_window();
 void sys_redraw();
 void sys_fulldraw_sheet(struct sheet* sheet);
 void sys_clean_view();
+typedef void(*keyborad_linstener)(int key);
 #endif

@@ -97,8 +97,8 @@ int main()
 	init_keyboard();
 	init_mouse();
 	
-	thread_start("keyboard", 2, thread_keyboard, NULL);
-	thread_start("mouse", 2, thread_mouse, NULL);
+	//thread_start("keyboard", 2, thread_keyboard, NULL);	RGUI接管键盘数据处理。
+	//thread_start("mouse", 2, thread_mouse, NULL);         RGUI接管鼠标数据处理
 	thread_start("clock", 2, thread_clock, NULL);
 	/*初始化管道系统，用于进程间通讯*/
 	init_pipe();
