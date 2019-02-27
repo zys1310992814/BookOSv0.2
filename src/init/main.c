@@ -97,14 +97,16 @@ int main()
 	init_keyboard();
 	init_mouse();
 	
-	//thread_start("keyboard", 2, thread_keyboard, NULL);	RGUI接管键盘数据处理。
+
+	/*keyboard线程是对键盘数据的基本处理，编程可以识别的数据，然后自己可以在这基础上再次拓展*/
+	thread_start("keyboard", 2, thread_keyboard, NULL);	//RGUI接管键盘数据处理。
 	//thread_start("mouse", 2, thread_mouse, NULL);         RGUI接管鼠标数据处理
 	thread_start("clock", 2, thread_clock, NULL);
 	/*初始化管道系统，用于进程间通讯*/
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
-	//init_gui();
-	sys_init_gui_system();
+	init_gui();
+	//sys_init_gui_system();
 	
 	//sys_clean_screen();
 	process_execute(init, "init");

@@ -21,6 +21,7 @@ E-mail:		2323168280@qq.com
 #include <sys/graphic.h>
 #include <sys/mouse.h>
 #include <sys/video.h>
+#include <sys/pipe.h>
 
 /**
 	添加一个系统调用步骤：

@@ -20,6 +20,11 @@ struct sheet *system_sheets[MAX_SHEET_NUMBER];
 uint32_t window_number = 0;
 uint32_t sheet_number = 0;
 struct Vector2 default_window_size;
+
+//只在本文件调用的函数要提前在这儿声明才能调用
+void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
+void keyborad_listen();
+
 //这里是一些关于监听的绑定
 keyborad_linstener top_keyboard_reader;
 void sys_init_gui_system(){
