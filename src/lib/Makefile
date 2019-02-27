@@ -61,6 +61,7 @@ OBJS =  string.o\
 		video.o\
 		mm.o\
 		pipe.o\
+		thread.o\
 		
 #First read here
 .PHONY: all
