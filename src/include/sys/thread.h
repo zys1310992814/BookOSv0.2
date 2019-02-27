@@ -160,5 +160,6 @@ void sys_exit(int status);
 int sys_wait(int32 *status);
 
 void thread_graphic_exit(struct thread *thread);
+int sys_get_pid();
 
 #endif
