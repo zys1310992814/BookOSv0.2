@@ -84,7 +84,10 @@ void init_syscall()
 	sys_call_table[_NR_GRAP_BUFFER] = sys_graph_buffer;
 	sys_call_table[_NR_GRAP_WORD] = sys_graph_char;
 
-	
+	sys_call_table[_NR_NEW_PIPE] = sys_new_pipe;
+	sys_call_table[_NR_READ_PIPE] = sys_read_pipe;
+	sys_call_table[_NR_WRITE_PIPE] = sys_write_pipe;
+	sys_call_table[_NR_CLOSE_PIPE] = sys_close_pipe;
 	
 	
 }
