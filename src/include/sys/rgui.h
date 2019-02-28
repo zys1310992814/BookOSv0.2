@@ -43,12 +43,12 @@ struct buffer_pixel {
     struct sheet* belong;  //图层来源。
 };
 struct buffer_sheet {   //缓冲图层，也是最后渲染的总图层。
-    pixel **buffer_pixel; //二维数组
+    struct buffer_pixel **buffer_pixel; //二维数组
 };
 void sys_init_gui_system();
 uint32_t sys_new_window();
 void sys_redraw();
-void sys_fulldraw_sheet(struct sheet* sheet,struct sheet target_sheet);
+void sys_fulldraw_sheet(struct sheet* sheet,struct buffer_sheet* target_sheet);
 void sys_clean_view();
 typedef void(*keyborad_linstener)(int key);
 typedef void(*mouse_linstener)(int code);

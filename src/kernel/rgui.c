@@ -17,6 +17,8 @@ E-mail:		1263592223@qq.com
 #include <sys/thread.h>
 #include <sys/keyboard.h>
 #include <sys/mouse.h>
+#include <rgui_pixel_data.h>
+#include <sys/system.h>
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 struct gui_window *window_list[MAX_WINDOW_NUMBER];
@@ -30,6 +32,7 @@ struct Vector2 default_window_size;
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 void mouse_listen();
+void mouse_rander();
 void call_mouse_listeners(int flag);
 void call_keyboard_listeners(int flag);
 //这里是一些关于监听的绑定
@@ -39,25 +42,65 @@ void sys_init_gui_system(){
     init_font();
     default_window_size.x = 100;
     default_window_size.y = 100;
+    struct buffer_sheet buffer_sheet;
+    buffer_sheet.buffer_pixel =  (struct buffer_pixel**)kmalloc(sizeof(struct buffer_pixel*) * video_info.width);
+    int x;
+    for(x = 0;x < video_info.width;x ++){
+        buffer_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
+    }
+    topest_system_sheet.sheet_data =  (pixel**)kmalloc(sizeof(struct pixel*) * video_info.width);
+    for(x = 0;x < video_info.width;x ++){
+        topest_system_sheet.sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
+    }
     //初始化一个图层
     system_sheets[0] = (struct sheet*)kmalloc(sizeof(struct sheet));
     //开始对图层进行初始化 为图层数据申请内存
     sheet_number ++;
     system_sheets[0]->used = true;
     system_sheets[0]->sheet_data = (pixel**)kmalloc(sizeof(pixel*) * video_info.width);
-    
-    uint32_t x = 0;
-    
-    for(;x < video_info.width;x ++){
+    for(x = 0;x < video_info.width;x ++){
         system_sheets[0]->sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
     }
     sys_set_only_color_sheet(system_sheets[0],COLOR_GREEN);
     sys_redraw();
-    vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_BLACK);
+    vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_WHITE);
 
     //创建键盘监听线程
     thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
+    thread_start("mouse_rander",2,mouse_rander,NULL);
+    vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
+    return;
+}
+void mouse_rander(){
+    //开始渲染鼠标
+    int x,y,past_x = 0,past_y = 0;
+    int temp_x,temp_y;
+    for(;;){
+        sys_get_mouse_position(&x,&y);
+        if(x == past_x && y == past_y){
+            continue;
+        }
+        for(temp_x = past_x;temp_x < MOUSE_SIZE_X;x ++){
+            for(temp_y = past_y;temp_y < MOUSE_SIZE_Y;y ++){
+                topest_system_sheet.sheet_data[x][y].used = false;
+            }
+        }
+        past_x = x;
+        past_y = y;
+        //开始渲染到对应位置
+        if(x + MOUSE_SIZE_X > video_info.width || y + MOUSE_SIZE_Y > video_info.height){
+            continue;
+        }
+        for(temp_x = x;temp_x < MOUSE_SIZE_X;x ++){
+            for(temp_y = y;temp_y < MOUSE_SIZE_Y;y ++){
+                topest_system_sheet.sheet_data[x][y].used = true;
+                topest_system_sheet.sheet_data[x][y].color = COLOR_WHITE;
+            }
+        }
+        vram_draw_string(x,y,"here",COLOR_RED);
+        
+    }
     return;
 }
 void mouse_listen(){
@@ -138,6 +181,8 @@ void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     for(;now > 0;now --){
         sys_fulldraw_sheet(system_sheets[now - 1],&buffer_sheet);
     }
+    //最后单独绘制强制顶层的图层
+    sys_fulldraw_sheet(&topest_system_sheet,&buffer_sheet);
     result_sheet = &buffer_sheet;
     //开始渲染到屏幕上
     int y;
