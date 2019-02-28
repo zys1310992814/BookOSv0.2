@@ -43,6 +43,7 @@
 #define _NR_GET_MOUSE_BTN	33
 #define _NR_GET_SCREEN		34
 #define _NR_GET_MEMORY		35
+#define _NR_GET_PID			36
 
 
 

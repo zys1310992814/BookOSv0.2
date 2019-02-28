@@ -136,6 +136,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(LIB_DIR)video.o\
 		$(LIB_DIR)mm.o\
 		$(LIB_DIR)pipe.o\
+		$(LIB_DIR)thread.o\
 		
 		
 all: compile link disk qemu

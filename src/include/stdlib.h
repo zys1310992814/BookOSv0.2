@@ -27,4 +27,6 @@ bool write_pipe(uint64_t pipe_id,void* data,uint32_t size);
 bool read_pipe(uint64_t pipe_id,void* buffer);
 bool close_pipe(uint64_t pipe_id);
 
+int get_pid();
+
 #endif

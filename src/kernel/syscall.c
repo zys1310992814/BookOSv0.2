@@ -22,6 +22,7 @@ E-mail:		2323168280@qq.com
 #include <sys/mouse.h>
 #include <sys/video.h>
 #include <sys/pipe.h>
+
 /**
 	添加一个系统调用步骤：
 	1.sys_call_table中添加函数名
@@ -30,11 +31,6 @@ E-mail:		2323168280@qq.com
 */
 
 sys_call_t sys_call_table[MAX_SYS_CALLS];
-void sys_pipe();
-void sys_pipe()
-{
-	printk("hello, pipe!\n");
-}
 
 void init_syscall()
 {
@@ -75,6 +71,9 @@ void init_syscall()
 	sys_call_table[_NR_GET_MOUSE_BTN] = sys_get_mouse_button;
 	sys_call_table[_NR_GET_SCREEN] = sys_get_screen;
 	sys_call_table[_NR_GET_MEMORY] = sys_get_memory;
+	sys_call_table[_NR_GET_PID] = sys_get_pid;
+	
+	
 	
 	sys_call_table[_NR_INIT_GRAPHIC] = sys_init_graphic;
 	sys_call_table[_NR_GRAPH_POINT] = sys_graph_point;
@@ -85,13 +84,11 @@ void init_syscall()
 	sys_call_table[_NR_GRAPHIC_EXIT] = sys_graphic_exit;
 	sys_call_table[_NR_GRAP_BUFFER] = sys_graph_buffer;
 	sys_call_table[_NR_GRAP_WORD] = sys_graph_char;
-	
+
 	sys_call_table[_NR_NEW_PIPE] = sys_new_pipe;
 	sys_call_table[_NR_READ_PIPE] = sys_read_pipe;
 	sys_call_table[_NR_WRITE_PIPE] = sys_write_pipe;
 	sys_call_table[_NR_CLOSE_PIPE] = sys_close_pipe;
-
+	
+	
 }
-
-
-

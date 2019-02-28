@@ -477,6 +477,12 @@ void thread_unblock(struct thread *thread)
 	io_store_eflags(old_status);
 }
 
+int sys_get_pid()
+{
+	struct thread *cur = thread_current();
+	return cur->pid;
+}
+
 static void idle()
 {
 	thread_bus.idle = 1;
