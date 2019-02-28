@@ -14,7 +14,8 @@ E-mail:		1263592223@qq.com
 #include <sys/font.h>
 #include <sys/thread.h>
 #include <sys/keyboard.h>
-
+void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
+void keyborad_listen();
 struct gui_window *window_list[MAX_WINDOW_NUMBER];
 struct sheet *system_sheets[MAX_SHEET_NUMBER];
 uint32_t window_number = 0;
@@ -39,7 +40,6 @@ void sys_init_gui_system(){
         system_sheets[0]->sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
     }
     sys_set_only_color_sheet(system_sheets[0],COLOR_GREEN);
-    
     sys_redraw();
     vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_BLACK);
 
