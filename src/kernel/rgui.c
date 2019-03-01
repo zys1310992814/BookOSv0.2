@@ -19,6 +19,7 @@ E-mail:		1263592223@qq.com
 #include <sys/mouse.h>
 #include <rgui_pixel_data.h>
 #include <sys/system.h>
+#include <stdio.h>
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 struct gui_window *window_list[MAX_WINDOW_NUMBER];
@@ -29,6 +30,7 @@ uint32_t window_number = 0;
 uint32_t sheet_number = 0;
 struct Vector2 default_window_size;
 //只在本文件调用的函数要提前在这儿声明才能调用
+void rand_buffer();
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 void mouse_listen();
@@ -39,7 +41,8 @@ void call_keyboard_listeners(int flag);
 keyborad_linstener top_keyboard_reader[LISTENER_GROUP_MAX];
 mouse_linstener top_mouse_reader[LISTENER_GROUP_MAX];
 void sys_init_gui_system(){
-    init_font();
+    printf("test");
+    printf("video_info :(%d,%d)",video_info.width,video_info.height);
     default_window_size.x = 100;
     default_window_size.y = 100;
     struct buffer_sheet buffer_sheet;
@@ -62,28 +65,38 @@ void sys_init_gui_system(){
         system_sheets[0]->sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
     }
     sys_set_only_color_sheet(system_sheets[0],COLOR_GREEN);
-    sys_redraw();
+    //sys_redraw();
     vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_WHITE);
 
     //创建键盘监听线程
     thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
-    thread_start("mouse_rander",2,mouse_rander,NULL);
-    vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
+    thread_start("mouse_rander",0,mouse_rander,NULL);
+    //vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
     return;
 }
 void mouse_rander(){
     //开始渲染鼠标
-    int x,y,past_x = 0,past_y = 0;
+    int x = 0,y = 0,past_x = 0,past_y = 0;
     int temp_x,temp_y;
     for(;;){
+        
         sys_get_mouse_position(&x,&y);
         if(x == past_x && y == past_y){
             continue;
         }
-        for(temp_x = past_x;temp_x < MOUSE_SIZE_X;x ++){
-            for(temp_y = past_y;temp_y < MOUSE_SIZE_Y;y ++){
-                topest_system_sheet.sheet_data[x][y].used = false;
+        //fouce_write("fuck");
+        printf("%d,%d /n",x,y);
+        //vram_write_pixel_16bits(x,y,COLOR_WHITE);
+        past_x = x;
+        past_y = y;
+        //sys_redraw();
+        
+        //销毁之前的鼠标影子
+        int temp_x,temp_y;
+        for(temp_x = 0;temp_x < MOUSE_SIZE_X && temp_x + past_x < video_info.width;temp_x ++){
+            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && temp_y + past_y < video_info.height;temp_y ++){
+                topest_system_sheet.sheet_data[temp_x][temp_y].used = false;
             }
         }
         past_x = x;
@@ -92,13 +105,15 @@ void mouse_rander(){
         if(x + MOUSE_SIZE_X > video_info.width || y + MOUSE_SIZE_Y > video_info.height){
             continue;
         }
-        for(temp_x = x;temp_x < MOUSE_SIZE_X;x ++){
-            for(temp_y = y;temp_y < MOUSE_SIZE_Y;y ++){
-                topest_system_sheet.sheet_data[x][y].used = true;
-                topest_system_sheet.sheet_data[x][y].color = COLOR_WHITE;
+        for(temp_x = 0;temp_x < MOUSE_SIZE_X && x + temp_x < video_info.width;x ++){
+            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && y + temp_y < video_info.height;y ++){
+                topest_system_sheet.sheet_data[x + temp_x][y + temp_y].used = true;
+                topest_system_sheet.sheet_data[x + temp_x][y + temp_y].color = COLOR_BLACK;
             }
         }
-        vram_draw_string(x,y,"here",COLOR_RED);
+        sys_redraw_rect(x,y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
+        
+        vram_draw_string(x,y,"here",COLOR_RED); 
         
     }
     return;
@@ -167,6 +182,36 @@ uint32_t sys_new_window(){  //返回窗口句柄
     window_number ++;
     return (window_number - 1);
 }
+void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
+    int range_x,range_y,range_sheet;
+    for(range_sheet = 0;range_sheet < MAX_SHEET_NUMBER;range_sheet++){
+        if(system_sheets[range_sheet] == NULL){
+            break;
+        }
+        for(range_x = 0;range_x < width && (x + range_x) < video_info.width;range_x ++){
+            for(range_y = 0;range_y < height && (y + range_y) < video_info.height;range_y ++){
+                if(system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].used){
+                    result_sheet->buffer_pixel[x + range_x][y + range_y].used = true;
+                    result_sheet->buffer_pixel[x + range_x][y + range_y].belong = system_sheets[range_sheet];
+                    result_sheet->buffer_pixel[x + range_x][y + range_y].color = system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].color;
+                    continue;
+                }
+            }
+        }
+    }
+    //渲染最顶端图层
+    for(range_x = 0;range_x < width && (x + range_x) < video_info.width;range_x ++){
+            for(range_y = 0;range_y < height && (y + range_y) < video_info.height;range_y ++){
+                if(topest_system_sheet.sheet_data[x + range_x][y + range_y].used == true){
+                    result_sheet->buffer_pixel[x + range_x][y + range_y].used = true;
+                    result_sheet->buffer_pixel[x + range_x][y + range_y].color = topest_system_sheet.sheet_data[x + range_x][y + range_y].color;
+                    continue;
+                }
+            }
+    }
+    rand_buffer();
+    return;
+}
 void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     //从下而上绘制像素
     uint32_t now = sheet_number;
@@ -178,17 +223,26 @@ void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     for(x = 0;x < video_info.width;x ++){
         buffer_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
     }
-    for(;now > 0;now --){
-        sys_fulldraw_sheet(system_sheets[now - 1],&buffer_sheet);
+    int range_sheet;
+    for(range_sheet = MAX_SHEET_NUMBER;range_sheet > 0;range_sheet --){
+        if(system_sheets[range_sheet - 1] == NULL){
+            continue;
+        }
+        sys_fulldraw_sheet(system_sheets[range_sheet - 1],&buffer_sheet);
     }
     //最后单独绘制强制顶层的图层
     sys_fulldraw_sheet(&topest_system_sheet,&buffer_sheet);
     result_sheet = &buffer_sheet;
     //开始渲染到屏幕上
-    int y;
+    rand_buffer();
+}
+void rand_buffer(){
+    int x,y;
     for(x = 0;x < video_info.width;x ++){
         for(y = 0;y < video_info.height;y ++){
-            vram_write_pixel_24bits(x,y,result_sheet->buffer_pixel[x][y].color);
+            if(result_sheet->buffer_pixel[x][y].used == true){
+                vram_write_pixel_16bits(x,y,result_sheet->buffer_pixel[x][y].color);
+            }
         }
     }
     return;
@@ -248,4 +302,24 @@ void call_keyboard_listeners(int flag){
         top_keyboard_reader[n](flag);
     }
     return;
+}
+void copy_sheet(struct sheet* source,struct sheet* target){ //得保证图层已经初始化，该函数不做初始化。
+    int x,y;
+    for(x = 0;x < video_info.width;x ++){
+        for(y = 0;y < video_info.height;y ++){
+            target->sheet_data[x][y].used = source->sheet_data[x][y].used;
+            target->sheet_data[x][y].color = source->sheet_data[x][y].color;
+        }
+    }
+    return;
+}
+#define LINE_LONG 10
+int position = 0;
+void fouce_write(char* data){ //直接在左上角输出文本
+    if(position + LINE_LONG >= video_info.height){
+        position = 0;
+    }
+    vram_draw_string(0,position,data,COLOR_WHITE);
+    
+    position += LINE_LONG;
 }
