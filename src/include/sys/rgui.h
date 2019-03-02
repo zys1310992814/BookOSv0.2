@@ -52,6 +52,7 @@ void copy_sheet(struct sheet* source,struct sheet* target);
 void sys_fulldraw_sheet(struct sheet* sheet,struct buffer_sheet* target_sheet);
 void sys_clean_view();
 void sys_redraw_rect(int x,int y,int width,int height);
+void rand_buffer_rect(int x,int y,int width,int height);
 typedef void(*keyborad_linstener)(int key);
 typedef void(*mouse_linstener)(int code);
 #endif

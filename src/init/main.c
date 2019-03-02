@@ -104,7 +104,7 @@ int main()
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
 	init_gui();
-	//sys_init_gui_system();
+	sys_init_gui_system();
 	
 	//sys_clean_screen();
 	process_execute(init, "init");

@@ -24,13 +24,14 @@ void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 struct gui_window *window_list[MAX_WINDOW_NUMBER];
 struct sheet *system_sheets[MAX_SHEET_NUMBER];
-struct sheet topest_system_sheet;   //提供给系统，始终在最高层，主要用来实现鼠标等功能
-struct buffer_sheet* result_sheet;  //最终渲染的图层
-uint32_t window_number = 0;
-uint32_t sheet_number = 0;
+struct sheet *topest_system_sheet;   //提供给系统，始终在最高层，主要用来实现鼠标等功能
+struct buffer_sheet result_sheet;  //最终渲染的图层
+int window_number = 0;
+int sheet_number = 0;
 struct Vector2 default_window_size;
 //只在本文件调用的函数要提前在这儿声明才能调用
 void rand_buffer();
+struct sheet* new_sheet();
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 void mouse_listen();
@@ -41,80 +42,72 @@ void call_keyboard_listeners(int flag);
 keyborad_linstener top_keyboard_reader[LISTENER_GROUP_MAX];
 mouse_linstener top_mouse_reader[LISTENER_GROUP_MAX];
 void sys_init_gui_system(){
-    printf("test");
+    int x;
     printf("video_info :(%d,%d)",video_info.width,video_info.height);
+    fouce_write("RGUI is initing");
     default_window_size.x = 100;
     default_window_size.y = 100;
-    struct buffer_sheet buffer_sheet;
-    buffer_sheet.buffer_pixel =  (struct buffer_pixel**)kmalloc(sizeof(struct buffer_pixel*) * video_info.width);
-    int x;
-    for(x = 0;x < video_info.width;x ++){
-        buffer_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
-    }
-    topest_system_sheet.sheet_data =  (pixel**)kmalloc(sizeof(struct pixel*) * video_info.width);
-    for(x = 0;x < video_info.width;x ++){
-        topest_system_sheet.sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
-    }
+    topest_system_sheet = new_sheet();
     //初始化一个图层
     system_sheets[0] = (struct sheet*)kmalloc(sizeof(struct sheet));
     //开始对图层进行初始化 为图层数据申请内存
     sheet_number ++;
+    system_sheets[0] = new_sheet();
     system_sheets[0]->used = true;
-    system_sheets[0]->sheet_data = (pixel**)kmalloc(sizeof(pixel*) * video_info.width);
+    sys_set_only_color_sheet(system_sheets[0],COLOR_BLUE);
+    //初始化result_sheet
+    result_sheet.buffer_pixel = (struct buffer_pixel**)kmalloc(sizeof(struct buffer_pixel*) * video_info.width);
     for(x = 0;x < video_info.width;x ++){
-        system_sheets[0]->sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
+        result_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
     }
-    sys_set_only_color_sheet(system_sheets[0],COLOR_GREEN);
-    //sys_redraw();
-    vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_WHITE);
-
+    //vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_WHITE);
     //创建键盘监听线程
     thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
-    thread_start("mouse_rander",0,mouse_rander,NULL);
+    thread_start("mouse_rander",1,mouse_rander,NULL);
+    fouce_write("finished starting thread.Start randing...");
+    //thread_start("test_rand",0,test,NULL);
+    sys_redraw();
     //vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
     return;
+}
+struct sheet* new_sheet(){
+    int x;
+    struct sheet* temp = (struct sheet*)kmalloc(sizeof(struct sheet));
+    temp->sheet_data = (pixel**)kmalloc(sizeof(pixel*) * video_info.width);
+    for(x = 0;x < video_info.width;x ++){
+        temp->sheet_data[x] = (pixel*)kmalloc(sizeof(pixel) * video_info.height);
+    }
+    return temp;
 }
 void mouse_rander(){
     //开始渲染鼠标
     int x = 0,y = 0,past_x = 0,past_y = 0;
-    int temp_x,temp_y;
     for(;;){
-        
         sys_get_mouse_position(&x,&y);
         if(x == past_x && y == past_y){
             continue;
         }
-        //fouce_write("fuck");
-        printf("%d,%d /n",x,y);
-        //vram_write_pixel_16bits(x,y,COLOR_WHITE);
-        past_x = x;
-        past_y = y;
-        //sys_redraw();
-        
         //销毁之前的鼠标影子
         int temp_x,temp_y;
-        for(temp_x = 0;temp_x < MOUSE_SIZE_X && temp_x + past_x < video_info.width;temp_x ++){
-            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && temp_y + past_y < video_info.height;temp_y ++){
-                topest_system_sheet.sheet_data[temp_x][temp_y].used = false;
+        printf("past(%d,%d)",past_x,past_y);
+        for(temp_x = 0;temp_x < MOUSE_SIZE_X && (temp_x + past_x) < video_info.width;temp_x ++){
+            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && (temp_y + past_y) < video_info.height;temp_y ++){
+                topest_system_sheet->sheet_data[temp_x + past_x][temp_y + past_y].used = false;
+                //printf("killed(%d,%d)",temp_x,temp_y);
             }
         }
+        //开始渲染到对应位置
+        for(temp_x = 0;temp_x < MOUSE_SIZE_X && x + temp_x < video_info.width;temp_x ++){
+            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && y + temp_y < video_info.height;temp_y ++){
+                topest_system_sheet->sheet_data[x + temp_x][y + temp_y].used = true;
+                topest_system_sheet->sheet_data[x + temp_x][y + temp_y].color = MOUSE_COLOR;
+            }
+        }
+        sys_redraw_rect(past_x,past_y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
+        sys_redraw_rect(x,y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
         past_x = x;
         past_y = y;
-        //开始渲染到对应位置
-        if(x + MOUSE_SIZE_X > video_info.width || y + MOUSE_SIZE_Y > video_info.height){
-            continue;
-        }
-        for(temp_x = 0;temp_x < MOUSE_SIZE_X && x + temp_x < video_info.width;x ++){
-            for(temp_y = 0;temp_y < MOUSE_SIZE_Y && y + temp_y < video_info.height;y ++){
-                topest_system_sheet.sheet_data[x + temp_x][y + temp_y].used = true;
-                topest_system_sheet.sheet_data[x + temp_x][y + temp_y].color = COLOR_BLACK;
-            }
-        }
-        sys_redraw_rect(x,y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
-        
-        vram_draw_string(x,y,"here",COLOR_RED); 
-        
     }
     return;
 }
@@ -184,16 +177,16 @@ uint32_t sys_new_window(){  //返回窗口句柄
 }
 void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     int range_x,range_y,range_sheet;
-    for(range_sheet = 0;range_sheet < MAX_SHEET_NUMBER;range_sheet++){
-        if(system_sheets[range_sheet] == NULL){
-            break;
+    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet > 0;range_sheet --){
+        if(system_sheets[range_sheet] == NULL){ //遍历完成.
+            continue;
         }
         for(range_x = 0;range_x < width && (x + range_x) < video_info.width;range_x ++){
             for(range_y = 0;range_y < height && (y + range_y) < video_info.height;range_y ++){
-                if(system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].used){
-                    result_sheet->buffer_pixel[x + range_x][y + range_y].used = true;
-                    result_sheet->buffer_pixel[x + range_x][y + range_y].belong = system_sheets[range_sheet];
-                    result_sheet->buffer_pixel[x + range_x][y + range_y].color = system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].color;
+                if(system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].used == true){
+                    result_sheet.buffer_pixel[x + range_x][y + range_y].used = true;
+                    result_sheet.buffer_pixel[x + range_x][y + range_y].belong = system_sheets[range_sheet];
+                    result_sheet.buffer_pixel[x + range_x][y + range_y].color = system_sheets[range_sheet]->sheet_data[x + range_x][y + range_y].color;
                     continue;
                 }
             }
@@ -202,59 +195,57 @@ void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     //渲染最顶端图层
     for(range_x = 0;range_x < width && (x + range_x) < video_info.width;range_x ++){
             for(range_y = 0;range_y < height && (y + range_y) < video_info.height;range_y ++){
-                if(topest_system_sheet.sheet_data[x + range_x][y + range_y].used == true){
-                    result_sheet->buffer_pixel[x + range_x][y + range_y].used = true;
-                    result_sheet->buffer_pixel[x + range_x][y + range_y].color = topest_system_sheet.sheet_data[x + range_x][y + range_y].color;
+                if(topest_system_sheet->sheet_data[x + range_x][y + range_y].used == true){
+                    result_sheet.buffer_pixel[x + range_x][y + range_y].used = true;
+                    result_sheet.buffer_pixel[x + range_x][y + range_y].color = topest_system_sheet->sheet_data[x + range_x][y + range_y].color;
                     continue;
                 }
             }
     }
-    rand_buffer();
+    rand_buffer_rect(x,y,width,height);
     return;
 }
 void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
-    //从下而上绘制像素
-    uint32_t now = sheet_number;
-    //video_clean_screen();
-    struct buffer_sheet buffer_sheet;
-    //开始初始化图层
-    buffer_sheet.buffer_pixel =  (struct buffer_pixel**)kmalloc(sizeof(struct buffer_pixel*) * video_info.width);
-    int x;
-    for(x = 0;x < video_info.width;x ++){
-        buffer_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
-    }
     int range_sheet;
-    for(range_sheet = MAX_SHEET_NUMBER;range_sheet > 0;range_sheet --){
-        if(system_sheets[range_sheet - 1] == NULL){
+    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet > 0;range_sheet --){
+        if(system_sheets[range_sheet] == NULL){
             continue;
         }
-        sys_fulldraw_sheet(system_sheets[range_sheet - 1],&buffer_sheet);
+        //开始遍历这个sheet
+        sys_fulldraw_sheet(system_sheets[range_sheet],&result_sheet);
     }
     //最后单独绘制强制顶层的图层
-    sys_fulldraw_sheet(&topest_system_sheet,&buffer_sheet);
-    result_sheet = &buffer_sheet;
-    //开始渲染到屏幕上
+    sys_fulldraw_sheet(topest_system_sheet,&result_sheet);
     rand_buffer();
+    return;
+}
+void rand_buffer_rect(int x,int y,int width,int height){
+    int temp_x,temp_y;
+    for(temp_x = 0;temp_x < width && temp_x + x < video_info.width;temp_x ++){
+        for(temp_y = 0;temp_y < video_info.height && temp_y + y < video_info.height;temp_y ++){
+            if(result_sheet.buffer_pixel[temp_x + x][temp_y + y].used == true){
+                vram_write_pixel_24bits(temp_x + x,temp_y + y,result_sheet.buffer_pixel[temp_x + x][temp_y + y].color);
+            }
+        }
+    }
+    return;
 }
 void rand_buffer(){
     int x,y;
     for(x = 0;x < video_info.width;x ++){
         for(y = 0;y < video_info.height;y ++){
-            if(result_sheet->buffer_pixel[x][y].used == true){
-                vram_write_pixel_16bits(x,y,result_sheet->buffer_pixel[x][y].color);
+            if(result_sheet.buffer_pixel[x][y].used == true){
+                vram_write_pixel_24bits(x,y,result_sheet.buffer_pixel[x][y].color);
             }
         }
     }
     return;
 }
 void sys_clean_view(){
-    uint32_t x = 0;
-    uint32_t y = 0;
+    int x,y;
     for(x = 0;x < video_info.width;x ++){
         for(y = 0;y < video_info.height;y ++){
-            //vram_write_pixel_24bits(x,y,sheet->sheet_data[x][y].color);
             vram_write_pixel(x,y,COLOR_BLUE);
-            //vram_write_pixel_24bits(x,y,0xFFFFF);
         }
     }
 }
@@ -262,11 +253,8 @@ void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color){
     int x,y;
     for(x = 0;x < video_info.width;x ++){
         for(y = 0;y < video_info.height;y ++){
-            //vram_write_pixel_24bits(x,y,sheet->sheet_data[x][y].color);
             sheet->sheet_data[x][y].used = true;
             sheet->sheet_data[x][y].color = color;
-            //vram_write_pixel(x,y,COLOR_RED);
-            //vram_write_pixel_24bits(x,y,0xFFFFF);
         }
     }
 }
@@ -275,7 +263,8 @@ void sys_fulldraw_sheet(struct sheet* sheet,struct buffer_sheet* target_sheet){
     int x,y;
     for(x = 0;x < video_info.width;x ++){
         for(y = 0;y < video_info.height;y ++){
-            if(sheet->sheet_data[x][y].used){
+            if(sheet->sheet_data[x][y].used == true){
+               // printf("\n got true(%d,%d)",x,y);
                 target_sheet->buffer_pixel[x][y].used = true;
                 target_sheet->buffer_pixel[x][y].color = sheet->sheet_data[x][y].color;
             }
