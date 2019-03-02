@@ -90,13 +90,13 @@ void mouse_rander(){
         }
         //销毁之前的鼠标影子
         int temp_x,temp_y;
-        printf("past(%d,%d)",past_x,past_y);
         for(temp_x = 0;temp_x < MOUSE_SIZE_X && (temp_x + past_x) < video_info.width;temp_x ++){
             for(temp_y = 0;temp_y < MOUSE_SIZE_Y && (temp_y + past_y) < video_info.height;temp_y ++){
                 topest_system_sheet->sheet_data[temp_x + past_x][temp_y + past_y].used = false;
                 //printf("killed(%d,%d)",temp_x,temp_y);
             }
         }
+        sys_redraw_rect(past_x,past_y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
         //开始渲染到对应位置
         for(temp_x = 0;temp_x < MOUSE_SIZE_X && x + temp_x < video_info.width;temp_x ++){
             for(temp_y = 0;temp_y < MOUSE_SIZE_Y && y + temp_y < video_info.height;temp_y ++){
@@ -104,7 +104,6 @@ void mouse_rander(){
                 topest_system_sheet->sheet_data[x + temp_x][y + temp_y].color = MOUSE_COLOR;
             }
         }
-        sys_redraw_rect(past_x,past_y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
         sys_redraw_rect(x,y,MOUSE_SIZE_X,MOUSE_SIZE_Y);
         past_x = x;
         past_y = y;
@@ -177,7 +176,7 @@ uint32_t sys_new_window(){  //返回窗口句柄
 }
 void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     int range_x,range_y,range_sheet;
-    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet > 0;range_sheet --){
+    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet >= 0;range_sheet --){
         if(system_sheets[range_sheet] == NULL){ //遍历完成.
             continue;
         }
@@ -207,7 +206,7 @@ void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
 }
 void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     int range_sheet;
-    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet > 0;range_sheet --){
+    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet >= 0;range_sheet --){
         if(system_sheets[range_sheet] == NULL){
             continue;
         }
