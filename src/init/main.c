@@ -105,16 +105,19 @@ int main()
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
 	//init_gui();
 	sys_init_gui_system();
-	
+	int window_id = sys_new_window();
 	//sys_clean_screen();
 	process_execute(init, "init");
 	thread_bus.main = 1;
+	int temp = 0;
 	while(1){
 		/*如果有进程被击杀，在这里回收
 		通常是被鼠标或者键盘强制停止的进程
 		*/
 		thread_recover();
-		
+		resize_window(window_id,temp,temp);
+		temp ++;
+
 		/*0.1秒检测一次*/
 		msec_sleep(100);
 	}

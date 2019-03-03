@@ -42,7 +42,7 @@ OBJS =  _start.o\
 		system.o\
 		pipe.o\
 		rgui.o\
-		
+		rgui_window.o
 		
 		
 		

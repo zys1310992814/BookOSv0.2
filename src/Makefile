@@ -76,6 +76,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(KERNEL_DIR)system.o\
 		$(KERNEL_DIR)pipe.o\
 		$(KERNEL_DIR)rgui.o\
+		$(KERNEL_DIR)rgui_window.o\
 		$(FS_DIR)dir.o\
 		$(FS_DIR)fatxe.o\
 		$(FS_DIR)fat.o\
@@ -170,7 +171,7 @@ bochs:
 	$(BOCHS) -q -f $(BXRC)
 
 qemu:
-	$(QEMU) -m 64 -fda $(FLAPPY_IMG) -hda $(HDA_IMG) -boot a
+	$(QEMU) -m 1024 -fda $(FLAPPY_IMG) -hda $(HDA_IMG) -boot a
 	
 #clean temporary files
 clean:
