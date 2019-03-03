@@ -212,7 +212,12 @@ void keyborad_listen(){
         continue;
     }
 }
-
+inline void rand_point(int x,int y){   //渲染单个点
+    if(x > video_info.width || y > video_info.height){
+        return;
+    }
+    
+}
 void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     int range_x,range_y,range_sheet;
     for(range_sheet = 0;range_sheet < MAX_SHEET_NUMBER;range_sheet ++){
