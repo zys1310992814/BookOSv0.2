@@ -2,6 +2,10 @@
     "files.associations": {
         "types.h": "c",
         "video.h": "c",
-        "rgui.h": "c"
+        "rgui.h": "c",
+        "keyboard.h": "c",
+        "mouse.h": "c",
+        "stdint.h": "c",
+        "thread.h": "c"
     }
 }

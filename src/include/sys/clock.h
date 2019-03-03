@@ -9,8 +9,8 @@
 //控制端口
 #define PIT_CNT0	0x0040
 //数据端口
-#define TIMER_FREQ     1193200	
-#define HZ             100	//1000 快速 100 普通0.001
+#define TIMER_FREQ     1193180	
+#define HZ             500	//1000 快速 100 普通0.001
 #define CLOCK_IRQ 0
 //时钟中断的irq号
 
