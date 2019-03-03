@@ -22,16 +22,15 @@ E-mail:		1263592223@qq.com
 #include <stdio.h>
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
-struct gui_window *window_list[MAX_WINDOW_NUMBER];
+
 struct sheet *system_sheets[MAX_SHEET_NUMBER];
 struct sheet *topest_system_sheet;   //提供给系统，始终在最高层，主要用来实现鼠标等功能
 struct buffer_sheet result_sheet;  //最终渲染的图层
-int window_number = 0;
+
 int sheet_number = 0;
-struct Vector2 default_window_size;
+
 //只在本文件调用的函数要提前在这儿声明才能调用
 void rand_buffer();
-struct sheet* new_sheet();
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 void mouse_listen();
@@ -45,8 +44,7 @@ void sys_init_gui_system(){
     int x;
     printf("video_info :(%d,%d)",video_info.width,video_info.height);
     fouce_write("RGUI is initing");
-    default_window_size.x = 100;
-    default_window_size.y = 100;
+    
     topest_system_sheet = new_sheet();
     //初始化一个图层
     system_sheets[0] = (struct sheet*)kmalloc(sizeof(struct sheet));
@@ -60,15 +58,67 @@ void sys_init_gui_system(){
     for(x = 0;x < video_info.width;x ++){
         result_sheet.buffer_pixel[x] = (struct buffer_pixel*)kmalloc(sizeof(struct buffer_pixel) * video_info.height);
     }
+    init_window_system();
     //vram_draw_string(video_info.width / 2,video_info.height / 2,"Hello World! initing....",COLOR_WHITE);
     //创建键盘监听线程
     thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
     thread_start("mouse_rander",1,mouse_rander,NULL);
     fouce_write("finished starting thread.Start randing...");
+    
     //thread_start("test_rand",0,test,NULL);
     sys_redraw();
     //vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
+    return;
+}
+bool if_sheet_full(){   //判断系统图层有没有满
+    if(sheet_number == MAX_SHEET_NUMBER - 1){
+        return true;
+    }
+    return false;
+}
+int add_sheet(struct sheet* sheet){
+    //判断是否达到图层上限
+    if(sheet_number == MAX_SHEET_NUMBER){
+        return -1;
+    }
+    //开始添加
+    system_sheets[sheet_number] = sheet;
+    sheet_number ++;
+    return (sheet_number - 1);
+}
+void swap_sheet(int a_id,int b_id){ //交换图层位置
+    struct sheet* temp;
+    //判断两个ID是否存在
+    if(system_sheets[a_id] == NULL || system_sheets[b_id] == NULL){
+        return;
+    }
+    temp = system_sheets[b_id];
+    system_sheets[b_id] = system_sheets[a_id];
+    system_sheets[a_id] = temp;
+    return;
+}
+void delete_sheet(int sheet_id){    //删除图层，并释放内存
+    if(system_sheets[sheet_id] == NULL){
+        return;
+    }
+    system_sheets[sheet_id]->used = false;
+    //开始释放内存
+    int x,index;
+    for(x = 0;x < video_info.width;x ++){
+        kfree(system_sheets[x]->sheet_data);
+    }
+    kfree(system_sheets);
+    //后面的图层前移
+    if(sheet_id == MAX_SHEET_NUMBER - 1){   //是最后一个图层，则不需要前移
+        return;
+    }
+    system_sheets[sheet_id] = system_sheets[sheet_id + 1];
+    for(index = sheet_id + 1;index < MAX_SHEET_NUMBER;index ++){
+        if(system_sheets[index] != NULL){
+            system_sheets[index] = system_sheets[index + 1];
+        }
+    }
     return;
 }
 struct sheet* new_sheet(){
@@ -162,21 +212,10 @@ void keyborad_listen(){
         continue;
     }
 }
-uint32_t sys_new_window(){  //返回窗口句柄
-    if(window_number == MAX_WINDOW_NUMBER){
-        return 0;
-    }
-    //Start initing window.
-    window_list[window_number] = (struct gui_window*)kmalloc(sizeof(struct gui_window));
-    window_list[window_number]->window_title = "new window";
-    window_list[window_number]->window_size = default_window_size;
-    window_list[window_number]->showable = true;
-    window_number ++;
-    return (window_number - 1);
-}
+
 void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     int range_x,range_y,range_sheet;
-    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet >= 0;range_sheet --){
+    for(range_sheet = 0;range_sheet < MAX_SHEET_NUMBER;range_sheet ++){
         if(system_sheets[range_sheet] == NULL){ //遍历完成.
             continue;
         }
@@ -206,7 +245,7 @@ void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
 }
 void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     int range_sheet;
-    for(range_sheet = MAX_SHEET_NUMBER - 1;range_sheet >= 0;range_sheet --){
+    for(range_sheet = 0;range_sheet < MAX_SHEET_NUMBER;range_sheet ++){
         if(system_sheets[range_sheet] == NULL){
             continue;
         }
