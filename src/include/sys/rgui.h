@@ -1,7 +1,7 @@
 #ifndef _GUI_SYSTEM_
 #define _GUI_SYSTEM_
 #define MAX_WINDOW_NUMBER 100   //最大窗口数
-#define MAX_SHEET_NUMBER 256    //最大图层数
+#define MAX_SHEET_NUMBER 100    //最大渲染队列长度
 #include <stdint.h>
 #include <types.h>
 
@@ -39,7 +39,9 @@ struct gui_window {
     bool showable;
     struct sheet* sheet;
 };
-
+enum rand_type{
+    rect,point      
+};
 
 struct buffer_pixel {
     bool used;

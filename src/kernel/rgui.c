@@ -1,5 +1,5 @@
 /*
-File:		kernel/gui.c
+File:		kernel/rgui.c
 Contains:	window and something about gui.
 Auther:		Dorbmon
 Time:		2019/2/24
