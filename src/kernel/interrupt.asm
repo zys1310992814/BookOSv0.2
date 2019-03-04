@@ -120,7 +120,7 @@ IRQ_clock:
 	mov es, dx
 	
 	;mov esp, INTERRUPT_STACK_TOP
-	;cli
+	cli
 	
 	mov	al, EOI
 	out	INT_M_CTL, al
@@ -129,7 +129,7 @@ IRQ_clock:
 	call [irq_table + CLOCK_IRQ*4]
 	add esp, 4
 
-	;sti
+	sti
 	jmp intr_exit
 	
 global IRQ_keyboard	
@@ -146,7 +146,7 @@ IRQ_keyboard:
 	
 	;mov esp, INTERRUPT_STACK_TOP
 	
-	;cli 
+	cli 
 	mov	al, EOI
 	out	INT_M_CTL, al
 	
@@ -154,8 +154,7 @@ IRQ_keyboard:
 	call [irq_table + KEYBOARD_IRQ*4]
 	add esp, 4
 	
-	
-	;sti
+	sti
 	jmp intr_exit
 	
 global IRQ_mouse
@@ -169,7 +168,8 @@ IRQ_mouse:
 	mov dx,ss
 	mov ds, dx
 	mov es, dx
-
+	cli
+	
 	;intr over
 	mov	al, EOI
 	;master
@@ -180,7 +180,7 @@ IRQ_mouse:
 	push MOUSE_IRQ
 	call [irq_table + MOUSE_IRQ*4]
 	add esp, 4
-	
+	sti
 	
 	jmp intr_exit
 
@@ -197,7 +197,7 @@ IRQ_primary_channel:
 	mov es, dx
 	
 	;mov esp, INTERRUPT_STACK_TOP
-	;cli 
+	cli 
 	;intr over
 	mov	al, EOI
 	;master
@@ -209,7 +209,7 @@ IRQ_primary_channel:
 	call [irq_table + PRIMARY_IRQ*4]
 	add esp, 4
 	
-	;sti
+	sti
 	jmp intr_exit
 
 global IRQ_secondary_channel
@@ -223,6 +223,8 @@ IRQ_secondary_channel:
 	mov dx,ss
 	mov ds, dx
 	mov es, dx
+
+	cli
 	
 	;intr over
 	mov	al, EOI
@@ -235,7 +237,7 @@ IRQ_secondary_channel:
 	call [irq_table + SECONDARY_IRQ*4]
 	add esp, 4
 	
-	;sti
+	sti
 	jmp intr_exit
 	
 global intrrupt_sys_call
@@ -245,6 +247,8 @@ intrrupt_sys_call:
 	push fs
 	push gs
 	pushad
+	
+	cli
 	
 	mov edi, edx
 	mov dx,ss
@@ -261,7 +265,7 @@ intrrupt_sys_call:
 	
 	;keep eax in return stack
 	mov [esp + 4*7], eax
-	
+	sti
 	jmp intr_exit
 	
 global thread_intr_exit	

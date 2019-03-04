@@ -28,5 +28,7 @@ bool read_pipe(uint64_t pipe_id,void* buffer);
 bool close_pipe(uint64_t pipe_id);
 
 int get_pid();
+int get_ticks();
+void sleep(u32 msec);
 
 #endif
