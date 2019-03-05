@@ -111,7 +111,7 @@ record thread has already init
 struct thread_bus
 {
 	char main, idle;	/*sys*/
-	char keyboard, mouse, clock; /*device*/
+	char keyboard, mouse, timer; /*device*/
 	char gui;	/*module*/
 };
 

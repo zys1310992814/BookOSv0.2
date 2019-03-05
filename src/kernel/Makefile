@@ -43,7 +43,8 @@ OBJS =  _start.o\
 		pipe.o\
 		rgui.o\
 		rgui_window.o\
-		rgui_rand_list.o
+		rgui_rand_list.o\
+		timer.o
 		
 		
 		

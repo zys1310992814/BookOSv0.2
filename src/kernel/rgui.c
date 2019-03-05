@@ -40,7 +40,16 @@ void call_keyboard_listeners(int flag);
 //这里是一些关于监听的绑定
 keyborad_linstener top_keyboard_reader[LISTENER_GROUP_MAX];
 mouse_linstener top_mouse_reader[LISTENER_GROUP_MAX];
-void sys_init_gui_system(){
+
+
+/*
+修订sys_init_gui_system
+成为init_gui_system
+原因：对于加上sys_的函数，我们是希望它主要是在用户态运行
+所以如果这个初始化gui的函数只在内核中运行，我们就不需要加上sys_
+2019/3/5 by 香橙子（Hu Zicheng）
+*/
+void init_gui_system(){
     int x;
     printf("video_info :(%d,%d)",video_info.width,video_info.height);
     fouce_write("RGUI is initing");

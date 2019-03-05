@@ -71,7 +71,7 @@ void init_thread()
 	thread_bus.idle = 0;
 	thread_bus.keyboard = 0;
 	thread_bus.mouse = 0;
-	thread_bus.clock = 0;
+	thread_bus.timer = 0;
 	thread_bus.gui = 0;
 
 	//主线程

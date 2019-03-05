@@ -16,6 +16,7 @@ E-mail:		2323168280@qq.com
 #include <sys/cmos.h>
 #include <sys/thread.h>
 #include <math.h>
+#include <sys/timer.h>
 
 struct clock clock;
 
@@ -62,6 +63,8 @@ void init_clock(void)
 		}*/
 	}while(time.second != get_sec_hex());
 
+	init_timer();
+	
 	put_irq_handler(CLOCK_IRQ, clock_handler);
 	
 	enable_irq(CLOCK_IRQ);
@@ -75,27 +78,33 @@ void clock_handler(int irq)
 {
 	struct thread *thread = thread_current();
 	clock.ticks++;
-	if(clock.ticks%100 == 0){
-		ioqueue_put(clock.ioqueue, 0);
-	}	
-	//clock_change_date_time();
+
+	//有超时的定时器
+	if(timer_module->next_ticks <= clock.ticks){
+		struct timer *timer;
+		timer = timer_module->next_timer; /* とりあえず先頭の番地をtimerに代入 */
+		while(1) {
+			//没有超时
+			if (timer->ticks > clock.ticks) {
+				break;
+			}
+			//变成未激活
+			timer->status = TIMER_USING;
+			//发生标志
+			timer->occured = 1;
+			
+			timer = timer->next; 
+		}
+		//设定下一个定时器
+		timer_module->next_timer = timer;
+		timer_module->next_ticks = timer->ticks;
+	}
+
 	if(thread->ticks == 0){
 		schedule();
 	}else{
 		thread->ticks--;
 		thread->run_ticks++;
-	}
-}
-
-void thread_clock(void *arg)
-{
-	//printk("running in clock\n");
-	thread_bus.clock = 1;
-	
-	while(1){
-		ioqueue_get(clock.ioqueue);	
-		clock_change_date_time();
-		
 	}
 }
 

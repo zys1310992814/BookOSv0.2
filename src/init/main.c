@@ -35,6 +35,8 @@ E-mail:		2323168280@qq.com
 #include <sys/graphic.h>
 #include <sys/pipe.h>
 #include <sys/rgui.h>
+#include <sys/timer.h>
+
 #define WRITE_DISK 1
 
 #define WRITE_ID 5
@@ -97,14 +99,17 @@ int main()
 	init_mouse();
 
 	/*keyboard线程是对键盘数据的基本处理，编程可以识别的数据，然后自己可以在这基础上再次拓展*/
-	thread_start("keyboard", 0, thread_keyboard, NULL);	//RGUI接管键盘数据处理。
-	thread_start("mouse", 0, thread_mouse, NULL);         
-	thread_start("clock", 0, thread_clock, NULL);
+	thread_start("keyboard", 1, thread_keyboard, NULL);	//RGUI接管键盘数据处理。
+	thread_start("mouse", 1, thread_mouse, NULL);         
+	/*把clock改成timer，用定时器的方式来进行时钟更新*/
+	thread_start("timer", 2, thread_timer, NULL);
+
 	/*初始化管道系统，用于进程间通讯*/
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
 	//init_gui();
-	sys_init_gui_system();
+
+	init_gui_system();
 	int window_id = sys_new_window();
 	//sys_clean_screen();
 	process_execute(init, "init");

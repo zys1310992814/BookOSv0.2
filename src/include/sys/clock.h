@@ -10,7 +10,8 @@
 #define PIT_CNT0	0x0040
 //数据端口
 #define TIMER_FREQ     1193180	
-#define HZ             500	//1000 快速 100 普通0.001
+#define TIMER_QUICKEN     5
+#define HZ             (100*TIMER_QUICKEN)	//1000 快速 100 普通0.001
 #define CLOCK_IRQ 0
 //时钟中断的irq号
 
@@ -40,7 +41,7 @@ void msec_sleep(u32 msec);
 
 struct time *sys_gettime(struct time *tm);
 
-void thread_clock(void *arg);
 int sys_get_ticks();
+void clock_change_date_time();
 #endif
 

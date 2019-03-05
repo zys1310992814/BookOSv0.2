@@ -52,7 +52,7 @@ struct buffer_sheet {   //缓冲图层，也是最后渲染的总图层。
     struct buffer_pixel **buffer_pixel; //二维数组
 };
 void add_point_to_rand_list(int x,int y);
-void sys_init_gui_system();
+void init_gui_system();
 int sys_new_window();
 void sys_redraw();
 void swap_sheet(int a_id,int b_id);

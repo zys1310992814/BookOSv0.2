@@ -78,6 +78,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(KERNEL_DIR)rgui.o\
 		$(KERNEL_DIR)rgui_window.o\
 		$(KERNEL_DIR)rgui_rand_list.o\
+		$(KERNEL_DIR)timer.o\
 		$(FS_DIR)dir.o\
 		$(FS_DIR)fatxe.o\
 		$(FS_DIR)fat.o\
