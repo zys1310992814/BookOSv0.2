@@ -119,8 +119,8 @@ int main()
 		/*如果有进程被击杀，在这里回收
 		通常是被鼠标或者键盘强制停止的进程
 		*/
-		//thread_recover();
-		resize_window(window_id,temp,temp);
+		thread_recover();
+		//resize_window(window_id,temp,temp);
 		temp ++;
 		/*0.1秒检测一次*/
 		//msec_sleep(100);

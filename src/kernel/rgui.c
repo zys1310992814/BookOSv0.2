@@ -20,6 +20,7 @@ E-mail:		1263592223@qq.com
 #include <rgui_pixel_data.h>
 #include <sys/system.h>
 #include <stdio.h>
+#include <sys/timer.h>
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 
@@ -28,7 +29,7 @@ struct sheet *topest_system_sheet;   //提供给系统，始终在最高层，�
 struct buffer_sheet result_sheet;  //最终渲染的图层
 
 int sheet_number = 0;
-
+struct timer *rand_timer;   //渲染定时器
 //只在本文件调用的函数要提前在这儿声明才能调用
 void rand_buffer();
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
@@ -37,6 +38,7 @@ void mouse_listen();
 void mouse_rander();
 void call_mouse_listeners(int flag);
 void call_keyboard_listeners(int flag);
+void rand_thread();
 //这里是一些关于监听的绑定
 keyborad_linstener top_keyboard_reader[LISTENER_GROUP_MAX];
 mouse_linstener top_mouse_reader[LISTENER_GROUP_MAX];
@@ -74,11 +76,19 @@ void init_gui_system(){
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
     thread_start("mouse_rander",1,mouse_rander,NULL);
     fouce_write("finished starting thread.Start randing...");
-    
-    //thread_start("test_rand",0,test,NULL);
+    //初始化渲染程序
+    rand_timer = timer_alloc();
+    thread_start("rand_thread",1,rand_thread,NULL);
     sys_redraw();
-    //vram_draw_string(0,0,"Finished binding.",COLOR_WHITE);
     return;
+}
+void rand_thread(){ 
+    timer_settime(rand_timer,100 / FPS);
+    for(;;){
+        if(timer_occur(rand_timer) == 1){   //到达渲染时间
+            rand_buffer();
+        }
+    }
 }
 bool if_sheet_full(){   //判断系统图层有没有满
     if(sheet_number == MAX_SHEET_NUMBER - 1){

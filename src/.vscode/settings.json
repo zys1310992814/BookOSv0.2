@@ -10,6 +10,8 @@
         "stdio.h": "c",
         "rgui.h": "c",
         "font.h": "c",
-        "keyboard.h": "c"
+        "keyboard.h": "c",
+        "time.h": "c",
+        "timer.h": "c"
     }
 }

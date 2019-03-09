@@ -15,7 +15,7 @@
 #define LEFT_MOUSE_DOWN 2
 #define MIDDLE_MOUSE_UP 1
 #define MIDDLE_MOUSE_DOWN 2
-
+#define FPS 60  //每秒渲染60次
 
 
 
