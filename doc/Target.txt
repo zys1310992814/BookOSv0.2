@@ -13,5 +13,4 @@
 [YES ]	GUI shell
 [YES ]	video buffer switch
 [NO]	Window System
-
-
+[NO]	Add a C compiler for BookOS
