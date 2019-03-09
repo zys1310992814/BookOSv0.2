@@ -21,6 +21,7 @@ E-mail:		1263592223@qq.com
 #include <sys/system.h>
 #include <stdio.h>
 #include <sys/timer.h>
+#include <sys/rgui_data.h>
 void sys_set_only_color_sheet(struct sheet* sheet,uint32_t color);
 void keyborad_listen();
 
@@ -214,6 +215,15 @@ void mouse_listen(){
         if(mouse_data[0] == MOUSE_DOWN && left_was_down == false){
             call_mouse_listeners(LEFT_MOUSE_DOWN);
         }
+        //转化为int型 回调窗口事件
+        int *datas = kmalloc(sizeof(int) * 3);
+        datas[0] = mouse_data[0];
+        datas[1] = mouse_data[1];
+        datas[2] = mouse_data[2];
+        //获取鼠标位置
+        int x,y;
+        sys_get_mouse_position(&x,&y);
+        call_window_event_listeners(result_sheet.buffer_pixel[x][y].belong->window_id,MOUSE_CLICK,datas);
     }
     
 }

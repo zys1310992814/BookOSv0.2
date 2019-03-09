@@ -57,7 +57,7 @@ E-mail:		2323168280@qq.com
 	#define WRITE_NAME "/piper"
 	#define FILE_SECTORS 20
 #endif
-
+void test();
 #define APP_PHY_ADDR 0x60000
 int main()
 {
@@ -110,7 +110,7 @@ int main()
 	//init_gui();
 
 	init_gui_system();
-	int window_id = sys_new_window();
+	test();
 	//sys_clean_screen();
 	process_execute(init, "init");
 	thread_bus.main = 1;
@@ -120,10 +120,8 @@ int main()
 		通常是被鼠标或者键盘强制停止的进程
 		*/
 		thread_recover();
-		//resize_window(window_id,temp,temp);
-		temp ++;
 		/*0.1秒检测一次*/
-		//msec_sleep(100);
+		msec_sleep(100);
 	}
 	return 0;
 }
@@ -140,4 +138,7 @@ void write_bin()
 	written = sys_write(fd, app_addr, FILE_SECTORS*SECTOR_SIZE);
 	printk("write bin %s size:%d success!\n",WRITE_NAME, written);
 	sys_close(fd);
+}
+void test(){	//本函数用来测试RGUI相关功能
+	
 }

@@ -30,6 +30,7 @@ int sys_new_window(){  //返回窗口句柄
     window_list[window_number]->showable = true;
     window_list[window_number]->sheet = new_sheet();
     window_list[window_number]->sheet->used = true;
+    window_list[window_number]->sheet->window_id = window_number;
     window_list[window_number]->window_position.x = 10;
     window_list[window_number]->window_position.y = 10;
     add_sheet(window_list[window_number]->sheet);
@@ -105,5 +106,18 @@ void move_window(int window_id,int x,int y){
     target_window->window_position.x = x;
     target_window->window_position.y = y;
     init_window(window_id);
+    return;
+}
+void call_window_event_listeners(int window_id,int event_id,int *datas){
+    if(window_list[window_id] == NULL){
+        return;
+    }
+    int ranger;
+    for(ranger = 0;ranger < MAX_WINDOW_EVENT_LISTNER;ranger ++){
+        if(window_list[window_id]->window_event_listeners[ranger] != NULL){
+            window_list[window_id]->window_event_listeners[ranger](event_id,datas);
+            continue;
+        }
+    }
     return;
 }
