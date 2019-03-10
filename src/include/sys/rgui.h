@@ -33,6 +33,8 @@ struct sheet {  //图层
     struct gui_window* window;
     int window_id;
 };
+typedef void(*window_event_listener)(int key,int *datas);   //第二个参数其实是一个数组，表达数据。因为事件不同，数据长度也不同 相关设置在RGUI_DATA里有描述
+
 struct gui_window {
     char* window_title;
     struct Vector2 window_size;
@@ -73,5 +75,9 @@ void fouce_write(char* data);
 bool if_sheet_full();
 typedef void(*keyborad_linstener)(int key);
 typedef void(*mouse_linstener)(int code);
-typedef void(*window_event_listener)(int key,int *datas);   //第二个参数其实是一个数组，表达数据。因为事件不同，数据长度也不同 相关设置在RGUI_DATA里有描述
+void move_window(int window_id,int x,int y);
+bool bind_window(int window_id,window_event_listener listener);
+void fouce_write(char* data);
+struct sheet* get_window_sheet(int window_id);
+void rgui_draw_rect(struct sheet* sheet,int x,int y,int width,int height,int color);
 #endif

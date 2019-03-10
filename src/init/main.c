@@ -111,7 +111,7 @@ int main()
 
 	init_gui_system();
 	test();
-	//sys_clean_screen();
+	sys_clean_screen();
 	process_execute(init, "init");
 	thread_bus.main = 1;
 	int temp = 0;
@@ -139,6 +139,18 @@ void write_bin()
 	printk("write bin %s size:%d success!\n",WRITE_NAME, written);
 	sys_close(fd);
 }
+void event(int key,int *datas){
+	if(key == MOUSE_DOWN){
+		if(datas[0] == 1){	//左键按下
+			fouce_write("got click");
+		}
+	}
+}
 void test(){	//本函数用来测试RGUI相关功能
-	
+
+	int window = sys_new_window();
+	resize_window(window,100,100);
+	move_window(window,100,100);
+	bind_window(window,event);
+	rgui_draw_rect(get_window_sheet(window),0,0,100,100,COLOR_GREEN);
 }

@@ -76,15 +76,19 @@ void init_gui_system(){
     thread_start("rgui_keyborad_listen",2,keyborad_listen,NULL);
     thread_start("rgui_mouse_listen",2,mouse_listen,NULL);
     thread_start("mouse_rander",1,mouse_rander,NULL);
+    thread_start("mouse_listener",1,mouse_listen,NULL);
     fouce_write("finished starting thread.Start randing...");
     //初始化渲染程序
     rand_timer = timer_alloc();
-    thread_start("rand_thread",1,rand_thread,NULL);
     sys_redraw();
+    thread_start("rand_thread",1,rand_thread,NULL);
+    
     return;
 }
 void rand_thread(){ 
-    timer_settime(rand_timer,100 / FPS);
+    if(timer_settime(rand_timer,100 / FPS) == -1){  //设置定时器失败 等内核加了日志再写。
+        
+    }
     for(;;){
         if(timer_occur(rand_timer) == 1){   //到达渲染时间
             rand_buffer();
@@ -186,9 +190,7 @@ void mouse_listen(){
     bool middle_was_down = false;
     char mouse_data[3];
     for(;;){
-        if(top_mouse_reader == NULL){
-            continue;
-        }
+        
         sys_get_mouse_button(mouse_data);
         if(mouse_data[2] == MOUSE_UP){
             if(right_was_down == true){   //曾经按下，则为松开事件
@@ -224,6 +226,7 @@ void mouse_listen(){
         int x,y;
         sys_get_mouse_position(&x,&y);
         call_window_event_listeners(result_sheet.buffer_pixel[x][y].belong->window_id,MOUSE_CLICK,datas);
+        
     }
     
 }
@@ -240,12 +243,6 @@ void keyborad_listen(){
         }
         continue;
     }
-}
-inline void rand_point(int x,int y){   //渲染单个点
-    if(x > video_info.width || y > video_info.height){
-        return;
-    }
-    
 }
 void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
     int range_x,range_y,range_sheet;
@@ -274,7 +271,7 @@ void sys_redraw_rect(int x,int y,int width,int height){    //渲染矩形区域
                 }
             }
     }
-    rand_buffer_rect(x,y,width,height);
+    //rand_buffer_rect(x,y,width,height);
     return;
 }
 void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
@@ -288,7 +285,6 @@ void sys_redraw(){  //立即刷新屏幕 完全刷新效率低，慎用。
     }
     //最后单独绘制强制顶层的图层
     sys_fulldraw_sheet(topest_system_sheet,&result_sheet);
-    rand_buffer();
     return;
 }
 void rand_buffer_rect(int x,int y,int width,int height){
@@ -372,6 +368,17 @@ void copy_sheet(struct sheet* source,struct sheet* target){ //得保证图层已
             target->sheet_data[x][y].color = source->sheet_data[x][y].color;
         }
     }
+    return;
+}
+void rgui_draw_rect(struct sheet* target_sheet,int x,int y,int width,int height,int color){
+    int temp_x,temp_y;
+    for(temp_x = 0;temp_x + x < video_info.width;temp_x ++){
+        for(temp_y = 0;temp_y + y < video_info.height;temp_y ++){
+            target_sheet->sheet_data[temp_x + x][temp_y + y].used = true;
+            target_sheet->sheet_data[temp_x + x][temp_y + y].color = color;
+        }
+    }
+    sys_redraw_rect(x,y,width,height);
     return;
 }
 #define LINE_LONG 10

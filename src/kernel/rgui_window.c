@@ -108,6 +108,19 @@ void move_window(int window_id,int x,int y){
     init_window(window_id);
     return;
 }
+bool bind_window(int window_id,window_event_listener listener){ //绑定到窗口事件
+    if(window_list[window_id] == NULL){
+        return false;
+    }
+    int ranger = 0;
+    for(ranger = 0;ranger < MAX_WINDOW_EVENT_LISTNER;ranger ++){
+        if(window_list[window_id]->window_event_listeners[ranger] == NULL){
+            window_list[window_id]->window_event_listeners[ranger] = listener;
+            return true;
+        }
+    }
+    return false;
+}
 void call_window_event_listeners(int window_id,int event_id,int *datas){
     if(window_list[window_id] == NULL){
         return;
@@ -120,4 +133,10 @@ void call_window_event_listeners(int window_id,int event_id,int *datas){
         }
     }
     return;
+}
+struct sheet* get_window_sheet(int window_id){
+    if(window_list[window_id] == NULL){
+        return NULL;
+    }
+    return window_list[window_id]->sheet;
 }
