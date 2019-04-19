@@ -90,6 +90,7 @@ OBJS =  $(KERNEL_DIR)_start.o\
 		$(GUI_DIR)ft_simsun.o\
 		$(GUI_DIR)ft_standard.o\
 		$(GUI_DIR)image.o\
+		$(DEVICE_DIR)device_system.o\
 		$(DEVICE_DIR)vga.o\
 		$(DEVICE_DIR)clock.o\
 		$(DEVICE_DIR)keyboard.o\

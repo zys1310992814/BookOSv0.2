@@ -107,11 +107,11 @@ int main()
 	/*初始化管道系统，用于进程间通讯*/
 	init_pipe();
 	/*初始化图形界面后才显示图形，不然都是开机界面*/
-	//init_gui();
+	init_gui();
 
-	init_gui_system();
+	/*init_gui_system();
 	test();
-	sys_clean_screen();
+	sys_clean_screen();*/
 	process_execute(init, "init");
 	thread_bus.main = 1;
 	int temp = 0;

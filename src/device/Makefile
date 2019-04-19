@@ -26,6 +26,7 @@ OBJS =  clock.o\
 		ramdisk.o\
 		mouse.o\
 		vga.o\
+		device_system.o\
 		
 		
 		
